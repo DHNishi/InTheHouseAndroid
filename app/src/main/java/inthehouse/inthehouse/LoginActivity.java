@@ -41,6 +41,9 @@ import java.util.List;
  * In order for Google+ sign in to work with your app, you must first go to:
  * https://developers.google.com/+/mobile/android/getting-started#step_1_enable_the_google_api
  * and follow the steps in "Step 1" to create an OAuth 2.0 client for your package.
+ *
+ * I THINK THIS DOES IT.
+ * http://www.ibm.com/developerworks/library/mo-android-googleauth-app/
  */
 public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<Cursor> {
 
