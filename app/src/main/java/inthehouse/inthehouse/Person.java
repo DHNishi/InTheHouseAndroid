@@ -14,6 +14,7 @@ public class Person {
     private Timestamp mLastCheckin;
     private String mHomeMac;
     private ArrayList<Person> mFriends;
+    private boolean mIsIncognito;
 
     // # of milliseconds since last checkin we use to decide if the user is still home or not.
     private static final int PERIOD_BEFORE_NOT_HOME = 3600000;
@@ -38,6 +39,7 @@ public class Person {
         else {
             this.mFriends = new ArrayList<Person>();
         }
+        this.mIsIncognito = false;
     }
 
     public void addFriend(Person friend) {
@@ -106,5 +108,13 @@ public class Person {
 
     public static void setCurrentUser(Person user) {
         mCurrentUser = user;
+    }
+
+    public boolean isIncognito() {
+        return mIsIncognito;
+    }
+
+    public void toggleIsIncognito() {
+        mIsIncognito = !mIsIncognito;
     }
 }

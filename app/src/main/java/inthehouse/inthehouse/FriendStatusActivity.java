@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class FriendStatusActivity extends ActionBarActivity {
@@ -46,13 +47,15 @@ public class FriendStatusActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_incognito:
+                mCurrentUser.toggleIsIncognito();
+                Toast.makeText(this, "Incognito mode is now " + (mCurrentUser.isIncognito() ?
+                        "enabled" : "disabled"), Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     // From http://stackoverflow.com/questions/600207/how-to-check-if-a-service-is-running-on-android

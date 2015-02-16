@@ -11,6 +11,8 @@ import android.util.Log;
 
 public class CheckinReceiver extends BroadcastReceiver {
 
+    private static final String SERVER_URL = "ec2-54-191-243-15.us-west-2.compute.amazonaws.com";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         ConnectivityManager connMgr =
@@ -23,12 +25,13 @@ public class CheckinReceiver extends BroadcastReceiver {
                 WifiInfo wifiInfo = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
                         .getConnectionInfo();
 
-                // TODO: uncomment this when home-setting is added
+                // TODO: Uncomment and combine if statements when home-setting is added
                 //if (wifiInfo.getMacAddress().equals(user.getHomeMac())) {
-                Log.d("CheckinReceiver", "checking in");
-                user.checkin();
-                // TODO: send the new time to the server
-                //}
+                if (!user.isIncognito()) {
+                    Log.d("CheckinReceiver", "checking in");
+                    user.checkin();
+                    // TODO: send the new time to the server
+                }
             }
             // TODO: Maybe explicitly set user as not home if we change the user data we're storing
             //       on the server
