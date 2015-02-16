@@ -1,7 +1,10 @@
 package inthehouse.inthehouse;
 
+import android.os.CountDownTimer;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The model for an user.
@@ -16,8 +19,11 @@ public class Person {
     private ArrayList<Person> mFriends;
     private boolean mIsIncognito;
 
+    // The countdown until incognito mode is reset.
+    private CountDownTimer mIncognitoTimer;
+
     // # of milliseconds since last checkin we use to decide if the user is still home or not.
-    private static final int PERIOD_BEFORE_NOT_HOME = 3600000;
+    private static final long PERIOD_BEFORE_NOT_HOME = TimeUnit.HOURS.toMillis(1);
 
     // Kinda gross but it makes sharing/syncing between the checkin service and activities nice
     // TODO: This needs to be set upon successful login
@@ -40,6 +46,7 @@ public class Person {
             this.mFriends = new ArrayList<Person>();
         }
         this.mIsIncognito = false;
+        this.mIncognitoTimer = null;
     }
 
     public void addFriend(Person friend) {
@@ -115,6 +122,24 @@ public class Person {
     }
 
     public void toggleIsIncognito() {
+        if (!mIsIncognito) {
+            startIncognitoCountDown();
+        }
+        else {
+            mIncognitoTimer.cancel();
+        }
         mIsIncognito = !mIsIncognito;
+    }
+
+    private void startIncognitoCountDown() {
+        mIncognitoTimer = new CountDownTimer(TimeUnit.DAYS.toMillis(1), TimeUnit.DAYS.toMillis(1)) {
+            @Override
+            public void onTick(long millisUntilFinished) {}
+
+            @Override
+            public void onFinish() {
+                toggleIsIncognito();
+            }
+        }.start();
     }
 }
