@@ -14,8 +14,6 @@ import android.widget.Toast;
 
 public class FriendStatusActivity extends ActionBarActivity {
 
-    private StatusReceiver mWifiMonitor;
-
     private Person mCurrentUser;
 
     @Override
