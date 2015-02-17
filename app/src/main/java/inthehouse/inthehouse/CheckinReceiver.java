@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -29,6 +30,7 @@ public class CheckinReceiver extends BroadcastReceiver {
         NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         Person user = Person.getCurrentUser();
 
+
         if (netInfo != null && user != null) {
             if (netInfo.isConnected()) {
                 WifiInfo wifiInfo = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
@@ -36,8 +38,7 @@ public class CheckinReceiver extends BroadcastReceiver {
 
                 if (!user.isIncognito() && wifiInfo.getMacAddress().equals(user.getHomeMac())) {
                     Log.d("CheckinReceiver", "checking in");
-                    user.checkin();
-                    serverCheckin(user);
+                    new CheckinTask(Person.getCurrentUser()).execute();
                 }
             }
             // TODO: Maybe explicitly set user as not home if we change the user data we're storing
@@ -61,6 +62,21 @@ public class CheckinReceiver extends BroadcastReceiver {
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private class CheckinTask extends AsyncTask<Void, Void, Void> {
+        Person user;
+
+        CheckinTask(Person user) {
+            this.user = user;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            user.checkin();
+            serverCheckin(user);
+            return null;
         }
     }
 }
