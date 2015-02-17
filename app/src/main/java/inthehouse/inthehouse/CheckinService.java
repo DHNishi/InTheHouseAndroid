@@ -15,13 +15,16 @@ import android.util.Log;
 
 public class CheckinService extends Service {
 
+    private static String TAG = CheckinService.class.getName();
+    public static String ACTION_CHECKIN = TAG + "CHECKIN";
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         Context ctx = getApplicationContext();
         AlarmManager alarmMgr = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pending = PendingIntent.getBroadcast(ctx, 0, new Intent("CHECKIN"),
+        PendingIntent pending = PendingIntent.getBroadcast(ctx, 0, new Intent(ACTION_CHECKIN),
                 PendingIntent.FLAG_CANCEL_CURRENT);
         alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 AlarmManager.INTERVAL_FIFTEEN_MINUTES, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pending);

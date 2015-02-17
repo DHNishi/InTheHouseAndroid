@@ -16,7 +16,7 @@ public class StatusReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-            context.sendBroadcast(new Intent("CHECKIN"));
+            context.sendBroadcast(new Intent(CheckinService.ACTION_CHECKIN));
         }
         else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             context.startService(new Intent(context, CheckinService.class));
