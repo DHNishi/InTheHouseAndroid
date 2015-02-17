@@ -34,9 +34,7 @@ public class CheckinReceiver extends BroadcastReceiver {
                 WifiInfo wifiInfo = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
                         .getConnectionInfo();
 
-                // TODO: Uncomment and combine if statements when home-setting is added
-                //if (wifiInfo.getMacAddress().equals(user.getHomeMac())) {
-                if (!user.isIncognito()) {
+                if (!user.isIncognito() && wifiInfo.getMacAddress().equals(user.getHomeMac())) {
                     Log.d("CheckinReceiver", "checking in");
                     user.checkin();
                     serverCheckin(user);
@@ -48,7 +46,7 @@ public class CheckinReceiver extends BroadcastReceiver {
     }
 
     private void serverCheckin(Person user) {
-        HttpGet request = new HttpGet(SERVER_URL + ":" + SERVER_PORT + "/checkin/" + user.getGoogleId());
+        HttpGet request = new HttpGet(SERVER_URL + ":" + SERVER_PORT + "/checkin/" + user.getAuthToken());
 
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();

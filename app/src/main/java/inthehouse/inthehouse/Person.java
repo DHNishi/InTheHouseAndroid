@@ -13,6 +13,7 @@ public class Person {
 
     private String mName;
     private String mGoogleId;
+    private String mAuthToken;
     private String mPictureUrl;
     private Timestamp mLastCheckin;
     private String mHomeMac;
@@ -27,13 +28,14 @@ public class Person {
 
     // Kinda gross but it makes sharing/syncing between the checkin service and activities nice
     // TODO: This needs to be set upon successful login
-    private static Person mCurrentUser = new Person("Bill", "fds", "dsf",
+    private static Person mCurrentUser = new Person("Bill", "fds", "dsf", "fdsf",
             new Timestamp(System.currentTimeMillis() - PERIOD_BEFORE_NOT_HOME),
             "aa:aa:aa:aa:aa:aa", null);
 
-    public Person(String name, String googleId, String pictureUrl, Timestamp lastCheckin,
+    public Person(String name, String authToken, String googleId, String pictureUrl, Timestamp lastCheckin,
                   String homeMac, ArrayList<Person> friends) {
         this.mName = name;
+        this.mAuthToken = authToken;
         this.mGoogleId = googleId;
         this.mPictureUrl = pictureUrl;
         this.mLastCheckin = lastCheckin;
@@ -73,24 +75,20 @@ public class Person {
         return mName;
     }
 
-    public void setName(String name) {
-        this.mName = name;
+    public String getAuthToken() {
+        return mAuthToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.mAuthToken = authToken;
     }
 
     public String getGoogleId() {
         return mGoogleId;
     }
 
-    public void setGoogleId(String googleId) {
-        this.mGoogleId = googleId;
-    }
-
     public String getPictureUrl() {
         return mPictureUrl;
-    }
-
-    public void setPictureUrl(String pictureUrl) {
-        this.mPictureUrl = pictureUrl;
     }
 
     public Timestamp getLastCheckin() {
