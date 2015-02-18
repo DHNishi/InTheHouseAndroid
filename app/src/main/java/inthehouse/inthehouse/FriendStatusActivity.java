@@ -2,8 +2,15 @@ package inthehouse.inthehouse;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +33,25 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         setContentView(R.layout.activity_friend_status);
         mCurrentUser = Person.getCurrentUser();
         Log.d("User Name", mCurrentUser.getName());
+
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (netInfo != null && netInfo.isConnected()) {
+            WifiInfo wifiInfo = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
+            String homeMac = sharedPrefs.getString(getString(R.string.mac_address_key), null);
+
+            // if home mac address preference is not set
+            if (homeMac == null) {
+                // ask user if he is home
+                showHomePopup(wifiInfo.getSSID(), wifiInfo.getMacAddress());
+            }
+            else {
+                // set current user's homeMac to address from prefs
+                mCurrentUser.setHomeMac(homeMac);
+            }
+        }
 
         if (!isServiceRunning(CheckinService.class)) {
             Intent service = new Intent(this, CheckinService.class);
@@ -94,5 +120,44 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
             }
         }
         return false;
+    }
+
+    private void showHomePopup(String networkName, final String macAddress) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Are you home?");
+        builder.setMessage("Is " + networkName + " your home network?");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                setHomeMacPref(macAddress);
+
+                dialog.dismiss();
+            }
+
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void setHomeMacPref(String macAddress) {
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+
+        editor.putString(getString(R.string.mac_address_key), macAddress);
+        editor.commit();
+
+        mCurrentUser.setHomeMac(macAddress);
     }
 }
