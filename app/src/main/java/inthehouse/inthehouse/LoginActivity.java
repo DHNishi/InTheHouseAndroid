@@ -1,41 +1,23 @@
 package inthehouse.inthehouse;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.plus.Plus;
-
-import java.io.IOException;
+import com.google.android.gms.common.AccountPicker;
 
 public class LoginActivity extends Activity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener
+        View.OnClickListener
 {
-    /* Request code used to invoke sign in user interactions. */
-    private static final int RC_SIGN_IN = 0;
-
-    /* Client used to interact with Google APIs. */
-    private GoogleApiClient mGoogleApiClient;
-
-    /* A flag indicating that a PendingIntent is in progress and prevents
-     * us from starting further intents.
-     */
-    private boolean mIntentInProgress;
-
-    // Logcat tag
-    private static final String TAG = "LoginActivity";
+    private static int SIGNING_REQUEST_CODE = 10000;
+    private static String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.email";
+    private String token;
 
     /**
      * Called when the activity is first created.
@@ -45,13 +27,6 @@ public class LoginActivity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API)
-                .addScope(Plus.SCOPE_PLUS_LOGIN)
-                .build();
-
         findViewById(R.id.btn_sign_in).setOnClickListener(this);
         findViewById(R.id.btn_sign_out).setOnClickListener(this);
         findViewById(R.id.btn_revoke_access).setOnClickListener(this);
@@ -59,97 +34,35 @@ public class LoginActivity extends Activity implements
     }
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
     }
 
     protected void onStop() {
         super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
     }
 
-    public void onConnectionFailed(ConnectionResult result) {
-        if (!mIntentInProgress && result.hasResolution()) {
-            try {
-                mIntentInProgress = true;
-                startIntentSenderForResult(result.getResolution().getIntentSender(),
-                        RC_SIGN_IN, null, 0, 0, 0);
-            } catch (IntentSender.SendIntentException e) {
-                // The intent was canceled before it was sent.  Return to the default
-                // state and attempt to connect to get an updated ConnectionResult.
-                mIntentInProgress = false;
-                mGoogleApiClient.connect();
-            }
-        }
-    }
-
-    public void onConnected(Bundle connectionHint) {
-        // We've resolved any connection errors.  mGoogleApiClient can be used to
-        // access Google APIs on behalf of the user.
-
-        com.google.android.gms.plus.model.people.Person gPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-        Person user = new Person(gPerson.getDisplayName(), Plus.AccountApi.getAccountName(mGoogleApiClient), gPerson.getId(), gPerson.getImage().getUrl(), null, null, null);
-        Person.setCurrentUser(user);
-
-        // TODO: This could be used in many places.
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String token = null;
-
-                try {
-                    token = GoogleAuthUtil.getToken(
-                            LoginActivity.this,
-                            Plus.AccountApi.getAccountName(mGoogleApiClient),
-                            "oauth2:profile");
-                } catch (IOException transientEx) {
-                    // Network or server error, try later
-                    Log.e(TAG, transientEx.toString());
-                } catch (UserRecoverableAuthException e) {
-                    // Recover (with e.getIntent())
-                    Log.e(TAG, e.toString());
-                    Intent recover = e.getIntent();
-                    startActivityForResult(recover, 9001);
-                } catch (GoogleAuthException authEx) {
-                    // The call is not ever expected to succeed
-                    // assuming you have already verified that
-                    // Google Play services is installed.
-                    Log.e(TAG, authEx.toString());
-                }
-
-                return token;
-            }
-
-            @Override
-            protected void onPostExecute(String token) {
-                // TODO: Set the Person access token appropriately.
-                Log.i(TAG, "Access token retrieved:" + token);
-                Person.getCurrentUser().setAuthToken(token);
-            }
-
-        };
-        task.execute();
-
-        Intent intent = new Intent(this, FriendStatusActivity.class);
-        startActivity(intent);
-    }
 
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
-        if (requestCode == RC_SIGN_IN) {
-            mIntentInProgress = false;
-
-            if (!mGoogleApiClient.isConnecting()) {
-                mGoogleApiClient.connect();
+        Log.d("LoginActivity", "onActivityResult()");
+        if (requestCode == SIGNING_REQUEST_CODE) {
+            if (responseCode == RESULT_OK) {
+                String email = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                new Thread(new GetUserName(this, email, SCOPE)).start();
+//                getUsername();
+            }
+            else if (responseCode == RESULT_CANCELED) {
+                signIn();
             }
         }
+
     }
 
-
-
-    public void onConnectionSuspended(int cause) {
-        mGoogleApiClient.connect();
+    private void signIn() {
+        Log.d("LoginActivity", "attempting sign-in.");
+        String[] accountTypes = {"com.google"};
+        Intent intent = AccountPicker.newChooseAccountIntent(null, null, accountTypes, false, null, null, null, null);
+        startActivityForResult(intent, SIGNING_REQUEST_CODE);
     }
+
 
     /**
      * Button on click listener
@@ -158,59 +71,47 @@ public class LoginActivity extends Activity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_sign_in:
-                signInWithGplus();
+                signIn();
                 break;
             case R.id.btn_sign_out:
-                // Signout button clicked
-                signOutFromGplus();
                 break;
             case R.id.btn_revoke_access:
-                // Revoke access button clicked
-                revokeGplusAccess();
                 break;
-           /* case R.id.log_out_button:
-                // Revoke access button clicked
-                revokeGplusAccess();
-                break;*/
+        }
+    }
 
-        }
-    }
-    /**
-     * Sign-in into google
-     * */
-    private void signInWithGplus() {
-        if (!mGoogleApiClient.isConnecting()) {
-            mGoogleApiClient.connect();
-        }
-    }
-    /**
-     * Sign-out from google
-     * */
-    private void signOutFromGplus() {
-        if (mGoogleApiClient.isConnected()) {
-            Toast.makeText(this, "User is attempting to log out!", Toast.LENGTH_LONG).show();
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-            mGoogleApiClient.connect();
-        }
-    }
-    /**
-     * Revoking access from google
-     * */
-    public void revokeGplusAccess() {
-        if (mGoogleApiClient.isConnected()) {
-            Toast.makeText(this, "Revoking Access", Toast.LENGTH_LONG).show();
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
-                    .setResultCallback(new ResultCallback<Status>() {
-                        @Override
-                        public void onResult(Status arg0) {
-                            Log.e(TAG, "User access revoked!");
-                            mGoogleApiClient.connect();
-                        }
+    class GetUserName implements Runnable {
+        Activity mActivity;
+        String mEmail;
+        String mScope;
 
-                    });
+        GetUserName(Activity mActivity, String mEmail, String mScope) {
+            this.mActivity = mActivity;
+            this.mEmail = mEmail;
+            this.mScope = mScope;
+        }
+
+        @Override
+        public void run() {
+            Log.d("THREAD", "Thread started");
+            Log.d("THREAD", "Email: " + mEmail);
+            Log.d("THREAD", "Scope: " + mScope);
+            try {
+                token = GoogleAuthUtil.getToken(mActivity, mEmail, mScope);
+                Log.d("Token", "Token: " + token);
+            } catch (UserRecoverableAuthException userRecoverableAuthException) {
+                //TODO: Exception Handling
+                Log.d("THREAD", userRecoverableAuthException.toString());
+                mActivity.startActivityForResult(userRecoverableAuthException.getIntent(), SIGNING_REQUEST_CODE);
+            } catch (GoogleAuthException googleAuthException) {
+                //TODO: Exception handling
+                Log.d("THREAD", googleAuthException.toString());
+            } catch (Exception e) {
+                //TODO: Exception handling
+                Log.d("THREAD", e.toString());
+            }
         }
     }
+
 
 }
