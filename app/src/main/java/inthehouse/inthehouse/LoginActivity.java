@@ -50,20 +50,7 @@ public class LoginActivity extends Activity implements
         if (requestCode == SIGNING_REQUEST_CODE) {
             if (responseCode == RESULT_OK) {
                 String email = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                Thread getUserName = new Thread(new GetUserName(this, email, SCOPE));
-
-                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        return null;
-                    }
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        startActivity(go_intent);
-                    }
-
-                };
-                task.execute(getUserName);
+                (new Thread(new GetUserName(this, email, SCOPE))).run();
                 startActivity(go_intent);
             }
             else if (responseCode == RESULT_CANCELED) {
