@@ -16,10 +16,6 @@ public class Person {
     private String mPictureUrl;
     private Timestamp mLastCheckin;
     private ArrayList<Person> mFriends;
-    private boolean mIsIncognito;
-
-    // The countdown until incognito mode is reset.
-    private CountDownTimer mIncognitoTimer;
 
     // # of milliseconds since last checkin we use to decide if the user is still home or not.
     private static final long PERIOD_BEFORE_NOT_HOME = TimeUnit.HOURS.toMillis(1);
@@ -37,8 +33,6 @@ public class Person {
         else {
             this.mFriends = new ArrayList<Person>();
         }
-        this.mIsIncognito = false;
-        this.mIncognitoTimer = null;
     }
 
     public void addFriend(Person friend) {
@@ -81,29 +75,4 @@ public class Person {
         return mFriends;
     }
 
-    public boolean isIncognito() {
-        return mIsIncognito;
-    }
-
-    public void toggleIsIncognito() {
-        if (!mIsIncognito) {
-            startIncognitoCountDown();
-        }
-        else {
-            mIncognitoTimer.cancel();
-        }
-        mIsIncognito = !mIsIncognito;
-    }
-
-    private void startIncognitoCountDown() {
-        mIncognitoTimer = new CountDownTimer(TimeUnit.DAYS.toMillis(1), TimeUnit.DAYS.toMillis(1)) {
-            @Override
-            public void onTick(long millisUntilFinished) {}
-
-            @Override
-            public void onFinish() {
-                toggleIsIncognito();
-            }
-        }.start();
-    }
 }
