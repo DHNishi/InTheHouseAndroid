@@ -29,7 +29,12 @@ public class CheckinReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        //NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
+
+        if (netInfo != null && !netInfo.getTypeName().equalsIgnoreCase("WIFI")) {
+            return;
+        }
 
         if (netInfo != null) {
             if (netInfo.isConnected()) {
