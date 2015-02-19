@@ -3,6 +3,7 @@ package inthehouse.inthehouse;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.media.session.MediaSession;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +17,7 @@ public class LoginActivity extends Activity implements
         View.OnClickListener
 {
     private static int SIGNING_REQUEST_CODE = 10000;
-    private static String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.email";
+    private static String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
     private String token;
 
     /**
@@ -47,10 +48,10 @@ public class LoginActivity extends Activity implements
             if (responseCode == RESULT_OK) {
                 String email = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 new Thread(new GetUserName(this, email, SCOPE)).start();
-//                getUsername();
+
             }
             else if (responseCode == RESULT_CANCELED) {
-                signIn();
+                //User must click the signin button again.
             }
         }
 
@@ -98,7 +99,10 @@ public class LoginActivity extends Activity implements
             Log.d("THREAD", "Scope: " + mScope);
             try {
                 token = GoogleAuthUtil.getToken(mActivity, mEmail, mScope);
+                TokenStorage.setAuthToken(mActivity, token);
+                token = TokenStorage.getAuthToken(mActivity);
                 Log.d("Token", "Token: " + token);
+
             } catch (UserRecoverableAuthException userRecoverableAuthException) {
                 //TODO: Exception Handling
                 Log.d("THREAD", userRecoverableAuthException.toString());
