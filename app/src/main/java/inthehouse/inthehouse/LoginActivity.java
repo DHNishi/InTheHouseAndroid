@@ -64,6 +64,7 @@ public class LoginActivity extends Activity implements
 
                 };
                 task.execute(getUserName);
+                startActivity(go_intent);
             }
             else if (responseCode == RESULT_CANCELED) {
                 //User must click the signin button again.
