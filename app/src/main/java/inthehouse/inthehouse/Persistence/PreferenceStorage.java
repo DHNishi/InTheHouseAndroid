@@ -38,13 +38,37 @@ public class PreferenceStorage {
 
     public static boolean isIncognito(Context c) {
         long time = Long.valueOf(getSharedPreferences(c).getString(INCOGNITO_TIMEOUT, "0"));
-        return System.currentTimeMillis() < time;
+        return System.currentTimeMillis() < time || time == -1;
     }
 
-    public static void setIncognito(Context c, long time) {
+    public static void setIncognitoTimeout(Context c, long time) {
         SharedPreferences sharedPreferences = getSharedPreferences(c);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String newTimeout = String.valueOf(System.currentTimeMillis() + time);
+        editor.putString(INCOGNITO_TIMEOUT, newTimeout);
+        editor.commit();
+    }
+
+    public static void toggleIncognito(Context c) {
+        SharedPreferences sharedPreferences = getSharedPreferences(c);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String newTimeout = isIncognito(c) ? "0" : "-1";
+        editor.putString(INCOGNITO_TIMEOUT, newTimeout);
+        editor.commit();
+    }
+
+    public static void setIncognitoOn(Context c) {
+        SharedPreferences sharedPreferences = getSharedPreferences(c);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String newTimeout = String.valueOf(-1);
+        editor.putString(INCOGNITO_TIMEOUT, newTimeout);
+        editor.commit();
+    }
+
+    public static void setIncognitoOff(Context c) {
+        SharedPreferences sharedPreferences = getSharedPreferences(c);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String newTimeout = String.valueOf(0);
         editor.putString(INCOGNITO_TIMEOUT, newTimeout);
         editor.commit();
     }

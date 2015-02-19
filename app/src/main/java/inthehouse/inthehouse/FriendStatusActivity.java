@@ -98,9 +98,9 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_incognito:
-                //mCurrentUser.toggleIsIncognito();
-                //Toast.makeText(this, "Incognito mode is now " + (mCurrentUser.isIncognito() ?
-                //        "enabled" : "disabled"), Toast.LENGTH_SHORT).show();
+                PreferenceStorage.toggleIncognito(this);
+                Toast.makeText(this, "Incognito mode is now " + (PreferenceStorage.isIncognito(this) ?
+                        "enabled" : "disabled"), Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
