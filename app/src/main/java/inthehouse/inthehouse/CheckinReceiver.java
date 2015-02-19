@@ -32,7 +32,7 @@ public class CheckinReceiver extends BroadcastReceiver {
         //NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
 
-        if (netInfo != null && !netInfo.getTypeName().equalsIgnoreCase("WIFI")) {
+        if (netInfo != null || !netInfo.getTypeName().equalsIgnoreCase("WIFI")) {
             return;
         }
 
