@@ -27,19 +27,25 @@ public class CheckinReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d("CheckinReceiver", "Started running.");
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         if (netInfo != null) {
+            Log.d("CheckinReceiver", "has netinfo");
             if (netInfo.isConnected()) {
                 WifiInfo wifiInfo = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
                         .getConnectionInfo();
-
-                if (!PreferenceStorage.isIncognito(context)
-                        && wifiInfo.getMacAddress().equals(PreferenceStorage.getWifiMac(context))) {
+                Log.d("CheckinReceiver", "netinfo is connected");
+                if ( !PreferenceStorage.isIncognito(context)
+//                        && wifiInfo.getMacAddress().equals(PreferenceStorage.getWifiMac(context))
+                        ) {
                     Log.d("CheckinReceiver", "checking in");
                     new CheckinTask(context).execute();
+                }
+                else {
+                    Log.d("CheckinReceiver", "failed checks.  Not checking in.");
                 }
             }
             // TODO: Maybe explicitly set user as not home if we change the user data we're storing
@@ -60,6 +66,7 @@ public class CheckinReceiver extends BroadcastReceiver {
             }
             response.close();
             httpClient.close();
+            PreferenceStorage.setLastCheckinTime(c);
         }
         catch (IOException e) {
             e.printStackTrace();
