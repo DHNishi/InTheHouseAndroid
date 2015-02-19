@@ -50,8 +50,12 @@ public class LoginActivity extends Activity implements
         if (requestCode == SIGNING_REQUEST_CODE) {
             if (responseCode == RESULT_OK) {
                 String email = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                (new Thread(new GetUserName(this, email, SCOPE))).run();
-                startActivity(go_intent);
+                AsyncTask<Void, Void, Void> task = new GetUserName(this, email, SCOPE) {
+                    @Override
+                    protected void onPostExecute(Void token) {
+                        startActivity(go_intent);
+                    }};
+                task.execute();
             }
             else if (responseCode == RESULT_CANCELED) {
                 //User must click the signin button again.
@@ -84,19 +88,20 @@ public class LoginActivity extends Activity implements
         }
     }
 
-    class GetUserName implements Runnable {
+    private class GetUserName extends AsyncTask<Void, Void, Void> {
+
         Activity mActivity;
         String mEmail;
         String mScope;
 
         GetUserName(Activity mActivity, String mEmail, String mScope) {
+            super();
             this.mActivity = mActivity;
             this.mEmail = mEmail;
             this.mScope = mScope;
         }
 
-        @Override
-        public void run() {
+        protected Void doInBackground(Void... params) {
             Log.d("THREAD", "Thread started");
             Log.d("THREAD", "Email: " + mEmail);
             Log.d("THREAD", "Scope: " + mScope);
@@ -117,6 +122,11 @@ public class LoginActivity extends Activity implements
                 //TODO: Exception handling
                 Log.d("THREAD", e.toString());
             }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void token) {
         }
     }
 
