@@ -33,7 +33,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_status);
-        Log.d("User Name", mCurrentUser.getName());
+        //Log.d("User Name", mCurrentUser.getName());
 
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -59,11 +59,11 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
     @Override
     protected void onResume() {
         super.onResume();
-        if (mCurrentUser.getLastCheckin() != null) {
+        /*if (mCurrentUser.getLastCheckin() != null) {
             // Temporarily displaying this here for testing purposes until we add friends next sprint
             ((TextView) findViewById(R.id.tempCheckinDisplay)).setText("Last checkin: " +
                     mCurrentUser.getLastCheckin().toString());
-        }
+        }*/
     }
 
     @Override

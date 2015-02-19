@@ -3,6 +3,7 @@ package inthehouse.inthehouse;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,11 +46,24 @@ public class LoginActivity extends Activity implements
 
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
         Log.d("LoginActivity", "onActivityResult()");
+        final Intent go_intent = new Intent(this, FriendStatusActivity.class);
         if (requestCode == SIGNING_REQUEST_CODE) {
             if (responseCode == RESULT_OK) {
                 String email = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                new Thread(new GetUserName(this, email, SCOPE)).start();
+                Thread getUserName = new Thread(new GetUserName(this, email, SCOPE));
 
+                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        return null;
+                    }
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        startActivity(go_intent);
+                    }
+
+                };
+                task.execute();
             }
             else if (responseCode == RESULT_CANCELED) {
                 //User must click the signin button again.
