@@ -27,7 +27,7 @@ import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
 public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private Person mCurrentUser;
+    TextView debugText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +54,11 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
             Intent service = new Intent(this, CheckinService.class);
             startService(service);
         }
+
+        debugText = (TextView) findViewById(R.id.tempCheckinDisplay);
+
+        debugText.setText(PreferenceStorage.getAuthToken(this));
+
     }
 
     @Override
