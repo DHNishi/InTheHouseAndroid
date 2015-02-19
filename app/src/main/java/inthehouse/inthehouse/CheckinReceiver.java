@@ -17,6 +17,8 @@ import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 
+import inthehouse.inthehouse.Persistence.PreferenceStorage;
+
 public class CheckinReceiver extends BroadcastReceiver {
 
     private static final String SERVER_URL = "http://ec2-54-191-243-15.us-west-2.compute.amazonaws.com";
@@ -36,7 +38,7 @@ public class CheckinReceiver extends BroadcastReceiver {
                 WifiInfo wifiInfo = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
                         .getConnectionInfo();
 
-                if (!user.isIncognito() && wifiInfo.getMacAddress().equals(user.getHomeMac())) {
+                if (!user.isIncognito() && wifiInfo.getMacAddress().equals(PreferenceStorage.getWifiMac(context))) {
                     Log.d("CheckinReceiver", "checking in");
                     new CheckinTask(Person.getCurrentUser()).execute();
                 }

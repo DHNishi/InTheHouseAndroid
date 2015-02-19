@@ -3,7 +3,6 @@ package inthehouse.inthehouse;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
-import android.media.session.MediaSession;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +11,8 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
+
+import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
 public class LoginActivity extends Activity implements
         View.OnClickListener
@@ -99,8 +100,8 @@ public class LoginActivity extends Activity implements
             Log.d("THREAD", "Scope: " + mScope);
             try {
                 token = GoogleAuthUtil.getToken(mActivity, mEmail, mScope);
-                TokenStorage.setAuthToken(mActivity, token);
-                token = TokenStorage.getAuthToken(mActivity);
+                PreferenceStorage.setAuthToken(mActivity, token);
+                token = PreferenceStorage.getAuthToken(mActivity);
                 Log.d("Token", "Token: " + token);
 
             } catch (UserRecoverableAuthException userRecoverableAuthException) {
