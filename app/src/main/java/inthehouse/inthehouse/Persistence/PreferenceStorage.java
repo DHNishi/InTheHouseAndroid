@@ -13,6 +13,7 @@ public class PreferenceStorage {
     private static String AUTH_TOKEN_KEY = "AUTHTOKEN";
     private static String WIFI_MAC_KEY = "WIFIMAC";
     private static String INCOGNITO_TIMEOUT = "INCOGTIMEOUT";
+    private static String LAST_CHECKIN_TIME = "CHECKINTIME";
 
     public static String getAuthToken(Context c) {
         return getSharedPreferences(c).getString(AUTH_TOKEN_KEY, null);
@@ -71,6 +72,20 @@ public class PreferenceStorage {
         String newTimeout = String.valueOf(0);
         editor.putString(INCOGNITO_TIMEOUT, newTimeout);
         editor.commit();
+    }
+
+    public static void setLastCheckinTime(Context c) {
+        SharedPreferences sharedPreferences = getSharedPreferences(c);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String time = String.valueOf(System.currentTimeMillis());
+        editor.putString(LAST_CHECKIN_TIME, time);
+        editor.commit();
+    }
+
+    public static long getLastCheckinTime(Context c) {
+        SharedPreferences sharedPreferences = getSharedPreferences(c);
+        long time = Long.valueOf(sharedPreferences.getString(LAST_CHECKIN_TIME, "0"));
+        return time;
     }
 
     private static SharedPreferences getSharedPreferences(Context c) {
