@@ -13,7 +13,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -41,12 +40,12 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
         if (netInfo != null && netInfo.isConnected()) {
             WifiInfo wifiInfo = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
-            String homeMac = PreferenceStorage.getWifiMac(this);
+            String homeMac = PreferenceStorage.getWifiSSID(this);
 
             // if home mac address preference is not set
             if (homeMac == null) {
                 // ask user if he is home
-                showHomePopup(wifiInfo.getSSID(), wifiInfo.getMacAddress(), this);
+                showHomePopup(wifiInfo.getSSID(), this);
             }
         }
 
@@ -124,7 +123,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         return false;
     }
 
-    private void showHomePopup(String networkName, final String macAddress, final Context c) {
+    private void showHomePopup(final String networkName, final Context c) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Are you home?");
         builder.setMessage("Is " + networkName + " your home network?");
@@ -133,7 +132,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                setHomeMacPref(macAddress, c);
+                PreferenceStorage.setWifiSSID(c, networkName);
 
                 dialog.dismiss();
             }
@@ -151,9 +150,5 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
         AlertDialog alert = builder.create();
         alert.show();
-    }
-
-    private void setHomeMacPref(String macAddress, Context c) {
-        PreferenceStorage.setWifiMac(c, macAddress);
     }
 }

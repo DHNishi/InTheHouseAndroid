@@ -11,7 +11,7 @@ public class PreferenceStorage {
     private static String SHARED_PREFERENCES_NAME = "INTHEHOUSE_SHARED_PREFS";
 
     private static String AUTH_TOKEN_KEY = "AUTHTOKEN";
-    private static String WIFI_MAC_KEY = "WIFIMAC";
+    private static String WIFI_SSID_KEY = "WIFISSID";
     private static String INCOGNITO_TIMEOUT = "INCOGTIMEOUT";
     private static String LAST_CHECKIN_TIME = "CHECKINTIME";
 
@@ -26,14 +26,14 @@ public class PreferenceStorage {
         editor.commit();
     }
 
-    public static String getWifiMac(Context c) {
-        return getSharedPreferences(c).getString(WIFI_MAC_KEY, null);
+    public static String getWifiSSID(Context c) {
+        return getSharedPreferences(c).getString(WIFI_SSID_KEY, null);
     }
 
-    public static void setWifiMac(Context c, String mac) {
+    public static void setWifiSSID(Context c, String mac) {
         SharedPreferences sharedPreferences = getSharedPreferences(c);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(WIFI_MAC_KEY, mac);
+        editor.putString(WIFI_SSID_KEY, mac);
         editor.commit();
     }
 

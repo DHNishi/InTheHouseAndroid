@@ -39,7 +39,7 @@ public class CheckinReceiver extends BroadcastReceiver {
                         .getConnectionInfo();
                 Log.d("CheckinReceiver", "netinfo is connected");
                 if ( !PreferenceStorage.isIncognito(context)
-//                        && wifiInfo.getMacAddress().equals(PreferenceStorage.getWifiMac(context))
+                        && wifiInfo.getSSID().equals(PreferenceStorage.getWifiSSID(context))
                         ) {
                     Log.d("CheckinReceiver", "checking in");
                     new CheckinTask(context).execute();
