@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import inthehouse.inthehouse.Persistence.PreferenceStorage;
+
 
 public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -31,7 +33,6 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_status);
-        mCurrentUser = Person.getCurrentUser();
         Log.d("User Name", mCurrentUser.getName());
 
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
@@ -40,16 +41,12 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
         if (netInfo != null && netInfo.isConnected()) {
             WifiInfo wifiInfo = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
-            String homeMac = sharedPrefs.getString(getString(R.string.mac_address_key), null);
+            String homeMac = PreferenceStorage.getWifiMac(this);
 
             // if home mac address preference is not set
             if (homeMac == null) {
                 // ask user if he is home
-                showHomePopup(wifiInfo.getSSID(), wifiInfo.getMacAddress());
-            }
-            else {
-                // set current user's homeMac to address from prefs
-                mCurrentUser.setHomeMac(homeMac);
+                showHomePopup(wifiInfo.getSSID(), wifiInfo.getMacAddress(), this);
             }
         }
 
@@ -122,7 +119,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         return false;
     }
 
-    private void showHomePopup(String networkName, final String macAddress) {
+    private void showHomePopup(String networkName, final String macAddress, final Context c) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Are you home?");
         builder.setMessage("Is " + networkName + " your home network?");
@@ -131,7 +128,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                setHomeMacPref(macAddress);
+                setHomeMacPref(macAddress, c);
 
                 dialog.dismiss();
             }
@@ -151,13 +148,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         alert.show();
     }
 
-    private void setHomeMacPref(String macAddress) {
-        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-
-        editor.putString(getString(R.string.mac_address_key), macAddress);
-        editor.commit();
-
-        mCurrentUser.setHomeMac(macAddress);
+    private void setHomeMacPref(String macAddress, Context c) {
+        PreferenceStorage.setWifiMac(c, macAddress);
     }
 }

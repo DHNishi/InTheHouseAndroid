@@ -30,17 +30,16 @@ public class CheckinReceiver extends BroadcastReceiver {
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        Person user = Person.getCurrentUser();
 
-
-        if (netInfo != null && user != null) {
+        if (netInfo != null) {
             if (netInfo.isConnected()) {
                 WifiInfo wifiInfo = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE))
                         .getConnectionInfo();
 
-                if (!user.isIncognito() && wifiInfo.getMacAddress().equals(PreferenceStorage.getWifiMac(context))) {
+                if (!PreferenceStorage.isIncognito(context)
+                        && wifiInfo.getMacAddress().equals(PreferenceStorage.getWifiMac(context))) {
                     Log.d("CheckinReceiver", "checking in");
-                    new CheckinTask(Person.getCurrentUser()).execute();
+                    new CheckinTask(context).execute();
                 }
             }
             // TODO: Maybe explicitly set user as not home if we change the user data we're storing
@@ -48,8 +47,8 @@ public class CheckinReceiver extends BroadcastReceiver {
         }
     }
 
-    private void serverCheckin(Person user) {
-        HttpGet request = new HttpGet(SERVER_URL + ":" + SERVER_PORT + "/checkin/" + user.getAuthToken());
+    private void serverCheckin(Context c) {
+        HttpGet request = new HttpGet(SERVER_URL + ":" + SERVER_PORT + "/checkin/" + PreferenceStorage.getAuthToken(c));
 
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -68,16 +67,15 @@ public class CheckinReceiver extends BroadcastReceiver {
     }
 
     private class CheckinTask extends AsyncTask<Void, Void, Void> {
-        Person user;
+        Context c;
 
-        CheckinTask(Person user) {
-            this.user = user;
+        CheckinTask(Context c) {
+            this.c = c;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            user.checkin();
-            serverCheckin(user);
+            serverCheckin(c);
             return null;
         }
     }

@@ -13,10 +13,8 @@ public class Person {
 
     private String mName;
     private String mGoogleId;
-    private String mAuthToken;
     private String mPictureUrl;
     private Timestamp mLastCheckin;
-    private String mHomeMac;
     private ArrayList<Person> mFriends;
     private boolean mIsIncognito;
 
@@ -26,20 +24,12 @@ public class Person {
     // # of milliseconds since last checkin we use to decide if the user is still home or not.
     private static final long PERIOD_BEFORE_NOT_HOME = TimeUnit.HOURS.toMillis(1);
 
-    // Kinda gross but it makes sharing/syncing between the checkin service and activities nice
-    // TODO: This needs to be set upon successful login
-    private static Person mCurrentUser = new Person("Bill", "fds", "dsf", "fdsf",
-            new Timestamp(System.currentTimeMillis() - PERIOD_BEFORE_NOT_HOME),
-            "aa:aa:aa:aa:aa:aa", null);
-
-    public Person(String name, String authToken, String googleId, String pictureUrl, Timestamp lastCheckin,
-                  String homeMac, ArrayList<Person> friends) {
+    public Person(String name, String googleId, String pictureUrl, Timestamp lastCheckin,
+                  ArrayList<Person> friends) {
         this.mName = name;
-        this.mAuthToken = authToken;
         this.mGoogleId = googleId;
         this.mPictureUrl = pictureUrl;
         this.mLastCheckin = lastCheckin;
-        this.mHomeMac = homeMac;
 
         if (friends != null) {
             this.mFriends = friends;
@@ -75,14 +65,6 @@ public class Person {
         return mName;
     }
 
-    public String getAuthToken() {
-        return mAuthToken;
-    }
-
-    public void setAuthToken(String authToken) {
-        this.mAuthToken = authToken;
-    }
-
     public String getGoogleId() {
         return mGoogleId;
     }
@@ -95,24 +77,8 @@ public class Person {
         return mLastCheckin;
     }
 
-    public String getHomeMac() {
-        return mHomeMac;
-    }
-
-    public void setHomeMac(String homeMac) {
-        this.mHomeMac = homeMac;
-    }
-
     public ArrayList<Person> getFriends() {
         return mFriends;
-    }
-
-    public static Person getCurrentUser() {
-        return mCurrentUser;
-    }
-
-    public static void setCurrentUser(Person user) {
-        mCurrentUser = user;
     }
 
     public boolean isIncognito() {
