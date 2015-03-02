@@ -15,24 +15,33 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
 
 public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    TextView debugText;
+    private ArrayList<Person> mFriends;
+
+    private PersonListAdapter mFriendsAdapter;
+
+    private ListView mFriendStatusVw;
+
+    private static final String TAG = "Friend Status";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_status);
-        //Log.d("User Name", mCurrentUser.getName());
+        mFriendStatusVw = (ListView) findViewById(R.id.friendStatusViewGroup);
 
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -40,10 +49,10 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
         if (netInfo != null && netInfo.isConnected()) {
             WifiInfo wifiInfo = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
-            String homeMac = PreferenceStorage.getWifiSSID(this);
+            String homeWifi = PreferenceStorage.getWifiSSID(this);
 
             // if home mac address preference is not set
-            if (homeMac == null) {
+            if (homeWifi == null) {
                 // ask user if he is home
                 showHomePopup(wifiInfo.getSSID(), this);
             }
@@ -54,20 +63,13 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
             startService(service);
         }
 
-        debugText = (TextView) findViewById(R.id.tempCheckinDisplay);
-
-        debugText.setText(PreferenceStorage.getAuthToken(this));
-
+        mFriends = new ArrayList<Person>();
+        getFriendStatuses();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        /*if (mCurrentUser.getLastCheckin() != null) {
-            // Temporarily displaying this here for testing purposes until we add friends next sprint
-            ((TextView) findViewById(R.id.tempCheckinDisplay)).setText("Last checkin: " +
-                    mCurrentUser.getLastCheckin().toString());
-        }*/
     }
 
     @Override
@@ -121,6 +123,58 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
             }
         }
         return false;
+    }
+
+    private void getFriendStatuses() {
+        /* Uncomment and finish once endpoint is implemented.
+        new AsyncTask<Void, Void, Map>() {
+
+            @Override
+            protected Map doInBackground(Void... params) {
+
+                HttpGet request = new HttpGet(PreferenceStorage.SERVER_URL + ":" +
+                        PreferenceStorage.SERVER_PORT + "/friends/status/" + PreferenceStorage.getAuthToken(c));
+                CloseableHttpClient httpClient = HttpClients.createDefault();
+                CloseableHttpResponse response = null;
+                Map<String, String> jsonResponse = null;
+
+                try {
+                    response = httpClient.execute(request);
+
+                    if (response.getStatusLine().getStatusCode() == PreferenceStorage.SUCCESS) {
+                        jsonResponse = new ObjectMapper().readValue(
+                                response.getEntity().getContent(), Map.class);
+                    }
+                    else {
+                        Log.d(TAG, "Error: " + response.getStatusLine().getStatusCode());
+                    }
+                    response.close();
+                    httpClient.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return jsonResponse;
+            }
+
+            @Override
+            protected void onPostExecute(Map response) {
+                if (response != null) {
+                    // TODO: What keys and values will be returned by the endpoint?
+                }
+            }
+        }.execute();
+        */
+
+        // Temporary mock friends
+        mFriends.add(new Person("Bill", "asdfasfd", "http://cdn02.cdn.justjared.com/wp-content/uploads/2008/01/depp-paris/johnny-depp-paris-person-19.jpg", new Timestamp(System.currentTimeMillis()), null));
+        mFriends.add(new Person("Frank", "asdfasfdf", "http://bygghjalphemma.se/wp-content/uploads/2014/11/bill-gates-wealthiest-person.jpg", new Timestamp(System.currentTimeMillis() - 1800000), null));
+        mFriends.add(new Person("Humphrey McGibbens", "asdfasfdff", "http://si.wsj.net/public/resources/images/ED-AM674_person_G_20101206164729.jpg", new Timestamp(System.currentTimeMillis() - 7200000), null));
+        mFriends.add(new Person("Finishi", "asdfasfdfff", "http://images1.fanpop.com/images/photos/1400000/Michael-in-Branch-Closing-michael-scott-1468602-1280-720.jpg", new Timestamp(System.currentTimeMillis()), null));
+        mFriends.add(new Person("Mr. Patrick", "asdfasfdfffffffff", "https://textbookstop.files.wordpress.com/2011/05/michael_scott_the_office_high_resolution_declare_bankrupcy.png", new Timestamp(System.currentTimeMillis() - 7200000), null));
+
+        mFriendsAdapter = new PersonListAdapter(getBaseContext(), mFriends);
+        mFriendStatusVw.setAdapter(mFriendsAdapter);
     }
 
     private void showHomePopup(final String networkName, final Context c) {

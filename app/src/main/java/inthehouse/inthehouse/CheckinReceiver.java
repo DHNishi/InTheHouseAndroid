@@ -21,10 +21,6 @@ import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
 public class CheckinReceiver extends BroadcastReceiver {
 
-    private static final String SERVER_URL = "http://ec2-54-191-243-15.us-west-2.compute.amazonaws.com";
-    private static final String SERVER_PORT = "5000";
-    private static final int SUCCESS = 200;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("CheckinReceiver", "Started running.");
@@ -61,13 +57,14 @@ public class CheckinReceiver extends BroadcastReceiver {
     }
 
     private void serverCheckin(Context c) {
-        HttpGet request = new HttpGet(SERVER_URL + ":" + SERVER_PORT + "/checkin/" + PreferenceStorage.getAuthToken(c));
+        HttpGet request = new HttpGet(PreferenceStorage.SERVER_URL + ":" +
+                PreferenceStorage.SERVER_PORT + "/checkin/" + PreferenceStorage.getAuthToken(c));
 
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             CloseableHttpResponse response = httpClient.execute(request);
 
-            if (response.getStatusLine().getStatusCode() != SUCCESS) {
+            if (response.getStatusLine().getStatusCode() != PreferenceStorage.SUCCESS) {
                 Log.d("CheckinReceiver", "Login failed: " + response.getStatusLine().getStatusCode());
                 // Do we want to have the user re-login if this happens?
             }
