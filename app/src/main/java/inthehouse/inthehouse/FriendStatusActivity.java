@@ -17,7 +17,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +45,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
     private PersonListAdapter mFriendsAdapter;
 
     private ListView mFriendStatusVw;
+    private TextView mNoFriendsVw;
 
     private static final String TAG = "Friend Status";
 
@@ -51,6 +54,8 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_status);
         mFriendStatusVw = (ListView) findViewById(R.id.friendStatusViewGroup);
+        mNoFriendsVw = (TextView) findViewById(R.id.noFriendsText);
+        mNoFriendsVw.setVisibility(View.GONE);
 
         SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -188,6 +193,9 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
                     mFriendsAdapter = new PersonListAdapter(getBaseContext(), mFriends);
                     mFriendStatusVw.setAdapter(mFriendsAdapter);
+                }
+                else {
+                    mNoFriendsVw.setVisibility(View.VISIBLE);
                 }
             }
         }.execute();
