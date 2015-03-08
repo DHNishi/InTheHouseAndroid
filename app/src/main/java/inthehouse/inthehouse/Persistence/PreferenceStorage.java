@@ -15,11 +15,6 @@ public class PreferenceStorage {
     private static String INCOGNITO_TIMEOUT = "INCOGTIMEOUT";
     private static String LAST_CHECKIN_TIME = "CHECKINTIME";
 
-    public static final String SERVER_URL = "http://ec2-54-191-243-15.us-west-2.compute.amazonaws.com";
-    public static final String SERVER_PORT = "5000";
-
-    public static final int SUCCESS = 200;
-
     public static String getAuthToken(Context c) {
         return getSharedPreferences(c).getString(AUTH_TOKEN_KEY, null);
     }

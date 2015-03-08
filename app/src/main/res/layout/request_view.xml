@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/senderName"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/acceptRequest"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:layout_marginLeft="10dp"
+        android:text="@string/accept_request" />
+
+    <Button
+        android:id="@+id/rejectRequest"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="@string/reject_request" />
+
+</LinearLayout>

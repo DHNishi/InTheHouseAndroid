@@ -6,16 +6,16 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="inthehouse.inthehouse.FriendStatusActivity">
+    tools:context="inthehouse.inthehouse.FriendRequestsActivity">
 
     <TextView
-        android:id="@+id/noFriendsText"
+        android:id="@+id/noRequestsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_friends" />
+        android:text="@string/no_requests" />
 
     <ListView
-        android:id="@+id/friendStatusViewGroup"
+        android:id="@+id/friendRequests"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" />
