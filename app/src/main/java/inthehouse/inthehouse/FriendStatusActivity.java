@@ -11,21 +11,30 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Map;
 
 import inthehouse.inthehouse.Persistence.PreferenceStorage;
-
 
 public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -64,7 +73,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         }
 
         mFriends = new ArrayList<Person>();
-        getFriendStatuses();
+        loadFriendStatuses();
     }
 
     @Override
@@ -125,25 +134,25 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         return false;
     }
 
-    private void getFriendStatuses() {
-        /* Uncomment and finish once endpoint is implemented.
-        new AsyncTask<Void, Void, Map>() {
+    private void loadFriendStatuses() {
+        new AsyncTask<Void, Void, ArrayList<Map>>() {
 
             @Override
-            protected Map doInBackground(Void... params) {
-
-                HttpGet request = new HttpGet(PreferenceStorage.SERVER_URL + ":" +
-                        PreferenceStorage.SERVER_PORT + "/friends/status/" + PreferenceStorage.getAuthToken(c));
+            protected ArrayList<Map> doInBackground(Void... params) {
                 CloseableHttpClient httpClient = HttpClients.createDefault();
                 CloseableHttpResponse response = null;
-                Map<String, String> jsonResponse = null;
+                ArrayList<Map> responseData = null;
+
+                HttpGet request = new HttpGet(PreferenceStorage.SERVER_URL + ":" +
+                        PreferenceStorage.SERVER_PORT + "/friends/status/" +
+                        PreferenceStorage.getAuthToken(FriendStatusActivity.this));
 
                 try {
                     response = httpClient.execute(request);
 
                     if (response.getStatusLine().getStatusCode() == PreferenceStorage.SUCCESS) {
-                        jsonResponse = new ObjectMapper().readValue(
-                                response.getEntity().getContent(), Map.class);
+                        responseData = new ObjectMapper().readValue(
+                                response.getEntity().getContent(), ArrayList.class);
                     }
                     else {
                         Log.d(TAG, "Error: " + response.getStatusLine().getStatusCode());
@@ -154,27 +163,34 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
                 catch (IOException e) {
                     e.printStackTrace();
                 }
-                return jsonResponse;
+                return responseData;
             }
 
             @Override
-            protected void onPostExecute(Map response) {
-                if (response != null) {
-                    // TODO: What keys and values will be returned by the endpoint?
+            protected void onPostExecute(ArrayList<Map> responseData) {
+                if (responseData != null) {
+                    for (Map<String, String> friend : responseData) {
+                        mFriends.add(new Person(
+                                friend.get("name"),
+                                friend.get("gid"),
+                                friend.get("picUrl"),
+                                new Timestamp(System.currentTimeMillis() - Integer.parseInt(friend.get("checkin"))),
+                                null
+                        ));
+                    }
+
+                    // Still keeping these for now for testing
+                    mFriends.add(new Person("Bill", "asdfasfd", "http://cdn02.cdn.justjared.com/wp-content/uploads/2008/01/depp-paris/johnny-depp-paris-person-19.jpg", new Timestamp(System.currentTimeMillis()), null));
+                    mFriends.add(new Person("Frank", "asdfasfdf", "http://bygghjalphemma.se/wp-content/uploads/2014/11/bill-gates-wealthiest-person.jpg", new Timestamp(System.currentTimeMillis() - 1800000), null));
+                    mFriends.add(new Person("Humphrey McGibbens", "asdfasfdff", "http://si.wsj.net/public/resources/images/ED-AM674_person_G_20101206164729.jpg", new Timestamp(System.currentTimeMillis() - 7200000), null));
+                    mFriends.add(new Person("Finishi", "asdfasfdfff", "http://images1.fanpop.com/images/photos/1400000/Michael-in-Branch-Closing-michael-scott-1468602-1280-720.jpg", new Timestamp(System.currentTimeMillis()), null));
+                    mFriends.add(new Person("Mr. Patrick", "asdfasfdfffffffff", "https://textbookstop.files.wordpress.com/2011/05/michael_scott_the_office_high_resolution_declare_bankrupcy.png", new Timestamp(System.currentTimeMillis() - 7200000), null));
+
+                    mFriendsAdapter = new PersonListAdapter(getBaseContext(), mFriends);
+                    mFriendStatusVw.setAdapter(mFriendsAdapter);
                 }
             }
         }.execute();
-        */
-
-        // Temporary mock friends
-        mFriends.add(new Person("Bill", "asdfasfd", "http://cdn02.cdn.justjared.com/wp-content/uploads/2008/01/depp-paris/johnny-depp-paris-person-19.jpg", new Timestamp(System.currentTimeMillis()), null));
-        mFriends.add(new Person("Frank", "asdfasfdf", "http://bygghjalphemma.se/wp-content/uploads/2014/11/bill-gates-wealthiest-person.jpg", new Timestamp(System.currentTimeMillis() - 1800000), null));
-        mFriends.add(new Person("Humphrey McGibbens", "asdfasfdff", "http://si.wsj.net/public/resources/images/ED-AM674_person_G_20101206164729.jpg", new Timestamp(System.currentTimeMillis() - 7200000), null));
-        mFriends.add(new Person("Finishi", "asdfasfdfff", "http://images1.fanpop.com/images/photos/1400000/Michael-in-Branch-Closing-michael-scott-1468602-1280-720.jpg", new Timestamp(System.currentTimeMillis()), null));
-        mFriends.add(new Person("Mr. Patrick", "asdfasfdfffffffff", "https://textbookstop.files.wordpress.com/2011/05/michael_scott_the_office_high_resolution_declare_bankrupcy.png", new Timestamp(System.currentTimeMillis() - 7200000), null));
-
-        mFriendsAdapter = new PersonListAdapter(getBaseContext(), mFriends);
-        mFriendStatusVw.setAdapter(mFriendsAdapter);
     }
 
     private void showHomePopup(final String networkName, final Context c) {

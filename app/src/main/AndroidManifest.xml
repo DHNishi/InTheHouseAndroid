@@ -52,7 +52,7 @@
             android:enabled="true"
             android:exported="true" >
             <intent-filter android:priority="100" >
-                <action android:name="CHECKIN" />
+                <action android:name="inthehouse.CHECKIN" />
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
