@@ -149,10 +149,10 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
                     if (responseData != null) {
                         for (Map<String, String> friend : responseData) {
-                            Log.d("FriendStatus", "gid: " + friend.get("gid"));
+                            Log.d("FriendStatus", "id: " + friend.get("id"));
                             mFriends.add(new Person(
                                     friend.get("name"),
-                                    friend.get("gid"),
+                                    friend.get("id"),
                                     friend.get("picUrl"),
                                     new Timestamp(System.currentTimeMillis()
                                             - Integer.parseInt(friend.get("checkin"))
