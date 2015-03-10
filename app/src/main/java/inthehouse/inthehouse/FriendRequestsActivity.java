@@ -48,8 +48,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
     }
 
     private void loadFriendRequests() {
-        // TODO: uncomment when endpoint is implemented
-        /*Server.getFriendRequests(this, new Server.ResponseCallback() {
+        Server.getFriendRequests(this, new Server.ResponseCallback() {
             @Override
             public void execute(InputStream response) {
                 try {
@@ -60,7 +59,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
                         for (Map<String, String> friend : responseData) {
                             mSenders.add(new Person(
                                     friend.get("name"),
-                                    friend.get("gid"),
+                                    friend.get("id"),
                                     null, null, null
                             ));
                         }
@@ -80,13 +79,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
             }
-        });*/
-        mSenders.add(new Person("Bill", "asdfasfd", "http://cdn02.cdn.justjared.com/wp-content/uploads/2008/01/depp-paris/johnny-depp-paris-person-19.jpg", new Timestamp(System.currentTimeMillis()), null));
-        mSenders.add(new Person("Frank", "asdfasfdf", "http://bygghjalphemma.se/wp-content/uploads/2014/11/bill-gates-wealthiest-person.jpg", new Timestamp(System.currentTimeMillis() - 1800000), null));
-
-        mSendersAdapter = new PersonListAdapter(FriendRequestsActivity.this,
-                mSenders, RequestView.class);
-        mRequestsVw.setAdapter(mSendersAdapter);
+        });
     }
 
     public void removeRequestBySender(Person sender) {

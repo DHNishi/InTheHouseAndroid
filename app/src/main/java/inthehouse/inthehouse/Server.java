@@ -80,7 +80,7 @@ public class Server {
                         responseData = response.getEntity().getContent();
                     }
                     else {
-                        Log.d(TAG, "Error: " + response.getStatusLine().getStatusCode());
+                        Log.d(TAG, "Error in " + route + ": " + response.getStatusLine().getStatusCode());
                     }
                     response.close();
                     httpClient.close();

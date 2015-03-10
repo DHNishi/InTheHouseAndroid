@@ -49,8 +49,7 @@ public class RequestView extends LinearLayout {
         mAcceptVw.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: uncomment when endpoint is implemented
-                //Server.acceptFriendRequest(mContext, mSender.getGoogleId(), removeRequest);
+                Server.acceptFriendRequest(mContext, mSender.getGoogleId(), removeRequest);
                 removeRequest.execute(null);
             }
         });
@@ -58,8 +57,7 @@ public class RequestView extends LinearLayout {
         mRejectVw.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: uncomment when endpoint is implemented
-                //Server.rejectFriendRequest(mContext, mSender.getGoogleId(), removeRequest);
+                Server.rejectFriendRequest(mContext, mSender.getGoogleId(), removeRequest);
                 removeRequest.execute(null);
             }
         });
