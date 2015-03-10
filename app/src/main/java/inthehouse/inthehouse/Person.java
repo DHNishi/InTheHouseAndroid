@@ -1,13 +1,11 @@
 package inthehouse.inthehouse;
 
-import android.os.CountDownTimer;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The model for an user.
+ * The model for a user.
  */
 public class Person {
 

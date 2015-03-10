@@ -16,13 +16,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
 public class CheckinReceiver extends BroadcastReceiver {
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
         Log.d("CheckinReceiver", "Started running.");
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -45,49 +46,17 @@ public class CheckinReceiver extends BroadcastReceiver {
                         && wifiInfo.getSSID().equals(PreferenceStorage.getWifiSSID(context))
                         ) {
                     Log.d("CheckinReceiver", "checking in");
-                    new CheckinTask(context).execute();
+                    Server.checkin(context, new Server.ResponseCallback() {
+                        @Override
+                        public void execute(InputStream response) {
+                            PreferenceStorage.setLastCheckinTime(context);
+                        }
+                    });
                 }
                 else {
                     Log.d("CheckinReceiver", "failed checks.  Not checking in.");
                 }
             }
-            // TODO: Maybe explicitly set user as not home if we change the user data we're storing
-            //       on the server
-        }
-    }
-
-    private void serverCheckin(Context c) {
-        HttpGet request = new HttpGet(PreferenceStorage.SERVER_URL + ":" +
-                PreferenceStorage.SERVER_PORT + "/checkin/" + PreferenceStorage.getAuthToken(c));
-
-        try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            CloseableHttpResponse response = httpClient.execute(request);
-
-            if (response.getStatusLine().getStatusCode() != PreferenceStorage.SUCCESS) {
-                Log.d("CheckinReceiver", "Login failed: " + response.getStatusLine().getStatusCode());
-                // Do we want to have the user re-login if this happens?
-            }
-            response.close();
-            httpClient.close();
-            PreferenceStorage.setLastCheckinTime(c);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private class CheckinTask extends AsyncTask<Void, Void, Void> {
-        Context c;
-
-        CheckinTask(Context c) {
-            this.c = c;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            serverCheckin(c);
-            return null;
         }
     }
 }

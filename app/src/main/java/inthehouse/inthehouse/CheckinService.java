@@ -15,8 +15,7 @@ import android.util.Log;
 
 public class CheckinService extends Service {
 
-    private static String TAG = CheckinService.class.getName();
-    public static String ACTION_CHECKIN = TAG + "CHECKIN";
+    public static String ACTION_CHECKIN = "inthehouse.CHECKIN";
 
     @Override
     public void onCreate() {

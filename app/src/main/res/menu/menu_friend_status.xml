@@ -13,4 +13,16 @@
         android:title="@string/incognito"
         android:icon="@drawable/incognito"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_view_friend_requests"
+        android:title="@string/view_requests"
+        android:icon="@drawable/requests_icon"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_add_friend"
+        android:title="@string/add_friend"
+        android:icon="@drawable/add_friend_icon"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -52,7 +52,7 @@
             android:enabled="true"
             android:exported="true" >
             <intent-filter android:priority="100" >
-                <action android:name="CHECKIN" />
+                <action android:name="inthehouse.CHECKIN" />
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
@@ -70,6 +70,14 @@
         <activity
             android:name=".AddFriendActivity"
             android:label="@string/title_activity_add_friend" >
+        </activity>
+        <activity
+            android:name=".FriendRequestsActivity"
+            android:label="@string/title_activity_friend_requests"
+            android:parentActivityName=".FriendStatusActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="inthehouse.inthehouse.FriendStatusActivity" />
         </activity>
     </application>
 

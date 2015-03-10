@@ -2,9 +2,14 @@ package inthehouse.inthehouse;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class AddFriendActivity extends ActionBarActivity implements
@@ -14,6 +19,7 @@ public class AddFriendActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
+        findViewById(R.id.btn_submit).setOnClickListener(this);
     }
 
 
@@ -46,7 +52,19 @@ public class AddFriendActivity extends ActionBarActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_submit:
-                System.out.println("Submit button hit.");
+                Log.d("ADD FRIEND", "Submit button hit.");
+
+                Server.addFriend(this, ((EditText) findViewById(R.id.txtEmail)).getText().toString(), new Server.ResponseCallback() {
+                    @Override
+                    public void execute(InputStream response) {
+                        if (response != null)
+                            Log.d("ADD FRIEND", "Friend added.");
+                        else {
+                            Log.d("ADD FRIEND", "There was an error.");
+                        }
+                        finishActivity(0);
+                    }
+                });
                 break;
         }
     }

@@ -13,9 +13,12 @@ public class PersonListAdapter extends BaseAdapter {
 
     private List<Person> mFriends;
 
-    public PersonListAdapter(Context context, List<Person> friends) {
+    private Class mViewType;
+
+    public PersonListAdapter(Context context, List<Person> friends, Class viewType) {
         mContext = context;
         mFriends = friends;
+        mViewType = viewType;
     }
 
     @Override
@@ -36,10 +39,17 @@ public class PersonListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = new PersonView(mContext, mFriends.get(position));
+            convertView = mViewType.equals(PersonView.class) ?
+                    new PersonView(mContext, mFriends.get(position)) :
+                    new RequestView(mContext, mFriends.get(position));
         }
         else {
-            ((PersonView) convertView).setPerson((Person) getItem(position));
+            if (mViewType.equals(PersonView.class)) {
+                ((PersonView) convertView).setPerson(mFriends.get(position));
+            }
+            else {
+                ((RequestView) convertView).setSender(mFriends.get(position));
+            }
         }
         return convertView;
     }
