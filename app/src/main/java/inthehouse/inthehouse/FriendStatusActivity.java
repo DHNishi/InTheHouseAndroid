@@ -122,6 +122,9 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
             case R.id.action_view_friend_requests:
                 startActivity(new Intent(this, FriendRequestsActivity.class));
                 return true;
+            case R.id.action_add_friend:
+                startActivity(new Intent(this, AddFriendActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
