@@ -54,9 +54,10 @@ public class AddFriendActivity extends ActionBarActivity implements
             case R.id.btn_submit:
                 Log.d("ADD FRIEND", "Submit button hit.");
 
-                Server.addFriend(this, ((EditText) findViewById(R.id.txtEmail)).getText().toString(), new Server.ResponseCallback() {
+                Server.addFriend(this, ((EditText) findViewById(R.id.txtEmail)).getText().toString(),
+                        new Server.ResponseCallback() {
                     @Override
-                    public void execute(InputStream response) {
+                    public void execute(InputStream response, int status) {
                         if (response != null)
                             Log.d("ADD FRIEND", "Friend added.");
                         else {
@@ -64,7 +65,7 @@ public class AddFriendActivity extends ActionBarActivity implements
                         }
                         finishActivity(0);
                     }
-                });
+                }, null);
                 break;
         }
     }

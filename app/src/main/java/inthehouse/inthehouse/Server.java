@@ -11,6 +11,8 @@ import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
@@ -32,42 +34,48 @@ public class Server {
     private static final String TAG = "Server";
 
     public interface ResponseCallback {
-        public void execute(InputStream response);
+        public void execute(InputStream response, int statusCode);
     }
 
-    public static void checkin(Context ctx, ResponseCallback onSuccess) {
-        sendRequest(ctx, ROUTE_CHECKIN, null, onSuccess);
+    public static void checkin(Context ctx, ResponseCallback onSuccess, ResponseCallback onError) {
+        sendRequest(ctx, ROUTE_CHECKIN, null, onSuccess, onError);
     }
 
-    public static void getFriendStatuses(Context ctx, ResponseCallback onSuccess) {
-        sendRequest(ctx, ROUTE_STATUSES, null, onSuccess);
+    public static void getFriendStatuses(Context ctx, ResponseCallback onSuccess,
+                                         ResponseCallback onError) {
+        sendRequest(ctx, ROUTE_STATUSES, null, onSuccess, onError);
     }
 
-    public static void getFriendRequests(Context ctx, ResponseCallback onSuccess) {
-        sendRequest(ctx, ROUTE_REQUESTS, null, onSuccess);
+    public static void getFriendRequests(Context ctx, ResponseCallback onSuccess,
+                                         ResponseCallback onError) {
+        sendRequest(ctx, ROUTE_REQUESTS, null, onSuccess, onError);
     }
 
-    public static void acceptFriendRequest(Context ctx, String friendId, ResponseCallback onSuccess) {
-        sendRequest(ctx, ROUTE_ACCEPT_REQUEST, friendId, onSuccess);
+    public static void acceptFriendRequest(Context ctx, String friendId, ResponseCallback onSuccess,
+                                           ResponseCallback onError) {
+        sendRequest(ctx, ROUTE_ACCEPT_REQUEST, friendId, onSuccess, onError);
     }
 
-    public static void rejectFriendRequest(Context ctx, String friendId, ResponseCallback onSuccess) {
-        sendRequest(ctx, ROUTE_REJECT_REQUEST, friendId, onSuccess);
+    public static void rejectFriendRequest(Context ctx, String friendId, ResponseCallback onSuccess,
+                                           ResponseCallback onError) {
+        sendRequest(ctx, ROUTE_REJECT_REQUEST, friendId, onSuccess, onError);
     }
 
-    public static void addFriend(Context ctx, String friendEmail, ResponseCallback onSuccess) {
-        sendRequest(ctx, ROUTE_ADD_FRIEND, friendEmail, onSuccess);
+    public static void addFriend(Context ctx, String friendEmail, ResponseCallback onSuccess,
+                                 ResponseCallback onError) {
+        sendRequest(ctx, ROUTE_ADD_FRIEND, friendEmail, onSuccess, onError);
     }
 
     private static void sendRequest(final Context ctx, final String route, final String genericArg,
-                                    final ResponseCallback onSuccess) {
-        new AsyncTask<Void, Void, InputStream>() {
+                                    final ResponseCallback onSuccess, final ResponseCallback onError) {
+        new AsyncTask<Void, Void, Map>() {
 
             @Override
-            protected InputStream doInBackground(Void... params) {
+            protected Map doInBackground(Void... params) {
                 CloseableHttpClient httpClient = HttpClients.createDefault();
                 CloseableHttpResponse response = null;
                 InputStream responseData = null;
+                Map<String, Object> data = new HashMap<String, Object>();
 
                 HttpGet request = new HttpGet(SERVER_URL + ":" + SERVER_PORT + route +
                         PreferenceStorage.getAuthToken(ctx) +
@@ -76,6 +84,7 @@ public class Server {
                 try {
                     response = httpClient.execute(request);
 
+                    data.put("status", response.getStatusLine().getStatusCode());
                     if (response.getStatusLine().getStatusCode() == SUCCESS) {
                         responseData = response.getEntity().getContent();
                     }
@@ -88,13 +97,17 @@ public class Server {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
-                return responseData;
+                data.put("data", responseData);
+                return data;
             }
 
             @Override
-            protected void onPostExecute(InputStream response) {
-                if (response != null) {
-                    onSuccess.execute(response);
+            protected void onPostExecute(Map response) {
+                if (response.get("data") != null && onSuccess != null) {
+                    onSuccess.execute((InputStream) response.get("data"), ((Integer) response.get("status")).intValue());
+                }
+                else if (response.get("data") == null && onError != null) {
+                    onError.execute(null, ((Integer) response.get("status")).intValue());
                 }
             }
         }.execute();

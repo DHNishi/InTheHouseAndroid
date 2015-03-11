@@ -50,7 +50,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
     private void loadFriendRequests() {
         Server.getFriendRequests(this, new Server.ResponseCallback() {
             @Override
-            public void execute(InputStream response) {
+            public void execute(InputStream response, int status) {
                 try {
                     ArrayList<Map<String, String>> responseData = new ObjectMapper()
                             .readValue(response, ArrayList.class);
@@ -79,7 +79,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
             }
-        });
+        }, null);
     }
 
     public void removeRequestBySender(Person sender) {

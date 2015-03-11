@@ -48,10 +48,10 @@ public class CheckinReceiver extends BroadcastReceiver {
                     Log.d("CheckinReceiver", "checking in");
                     Server.checkin(context, new Server.ResponseCallback() {
                         @Override
-                        public void execute(InputStream response) {
+                        public void execute(InputStream response, int status) {
                             PreferenceStorage.setLastCheckinTime(context);
                         }
-                    });
+                    }, null);
                 }
                 else {
                     Log.d("CheckinReceiver", "failed checks.  Not checking in.");

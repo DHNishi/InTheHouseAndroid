@@ -41,7 +41,7 @@ public class RequestView extends LinearLayout {
     private void initListeners() {
         final Server.ResponseCallback removeRequest = new Server.ResponseCallback() {
             @Override
-            public void execute(InputStream response) {
+            public void execute(InputStream response, int status) {
                 ((FriendRequestsActivity) mContext).removeRequestBySender(mSender);
             }
         };
@@ -49,16 +49,14 @@ public class RequestView extends LinearLayout {
         mAcceptVw.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Server.acceptFriendRequest(mContext, mSender.getGoogleId(), removeRequest);
-                removeRequest.execute(null);
+                Server.acceptFriendRequest(mContext, mSender.getGoogleId(), removeRequest, null);
             }
         });
 
         mRejectVw.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Server.rejectFriendRequest(mContext, mSender.getGoogleId(), removeRequest);
-                removeRequest.execute(null);
+                Server.rejectFriendRequest(mContext, mSender.getGoogleId(), removeRequest, null);
             }
         });
     }

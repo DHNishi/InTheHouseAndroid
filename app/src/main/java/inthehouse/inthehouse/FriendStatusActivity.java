@@ -145,7 +145,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
     private void loadFriendStatuses() {
         Server.getFriendStatuses(this, new Server.ResponseCallback() {
             @Override
-            public void execute(InputStream response) {
+            public void execute(InputStream response, int status) {
                 try {
                     ArrayList<Map<String, String>> responseData = new ObjectMapper()
                             .readValue(response, ArrayList.class);
@@ -181,7 +181,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
                     e.printStackTrace();
                 }
             }
-        });
+        }, null);
     }
 
     private void showHomePopup(final String networkName, final Context c) {
