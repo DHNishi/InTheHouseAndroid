@@ -31,8 +31,6 @@ public class LoginActivity extends Activity implements
         setContentView(R.layout.activity_login);
 
         findViewById(R.id.btn_sign_in).setOnClickListener(this);
-        findViewById(R.id.btn_sign_out).setOnClickListener(this);
-        findViewById(R.id.btn_revoke_access).setOnClickListener(this);
         /*findViewById(R.id.log_out_button).setOnClickListener(this);*/
     }
     protected void onStart() {
@@ -80,10 +78,6 @@ public class LoginActivity extends Activity implements
         switch (v.getId()) {
             case R.id.btn_sign_in:
                 signIn();
-                break;
-            case R.id.btn_sign_out:
-                break;
-            case R.id.btn_revoke_access:
                 break;
         }
     }
