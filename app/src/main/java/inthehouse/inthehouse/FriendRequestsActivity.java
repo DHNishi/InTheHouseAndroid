@@ -1,28 +1,18 @@
 package inthehouse.inthehouse;
 
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
 public class FriendRequestsActivity extends ActionBarActivity {
 
@@ -32,6 +22,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
 
     private ListView mRequestsVw;
     private TextView mNoRequestsVw;
+    private Button mRefreshVw;
 
     private static final String TAG = "Friend Requests";
 
@@ -41,7 +32,15 @@ public class FriendRequestsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_friend_requests);
         mRequestsVw = (ListView) findViewById(R.id.friendRequests);
         mNoRequestsVw = (TextView) findViewById(R.id.noRequestsText);
+        mRefreshVw = (Button) findViewById(R.id.refreshBtn);
+
         mNoRequestsVw.setVisibility(View.GONE);
+        mRefreshVw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadFriendRequests();
+            }
+        });
 
         mSenders = new ArrayList<Person>();
         loadFriendRequests();

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
-public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private ArrayList<Person> mFriends;
 
@@ -57,6 +58,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         setContentView(R.layout.activity_friend_status);
         mFriendStatusVw = (ListView) findViewById(R.id.friendStatusViewGroup);
         mNoFriendsVw = (TextView) findViewById(R.id.noFriendsText);
+
         mNoFriendsVw.setVisibility(View.GONE);
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -189,7 +191,6 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
                 dialog.dismiss();
             }
-
         });
 
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -235,45 +236,6 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         });
 
         AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    @Override
-    public void onClick(View v) {
-        final Person friend = ((PersonView) v.getParent().getParent()).getPerson();
-        Log.d("wut", "wut1");
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        Log.d("wut", "wut2");
-        builder.setTitle("Confirm Friend Deletion");
-        builder.setMessage("Are you sure you want to delete " + friend.getName() + "?");
-
-        Log.d("wut", "wut3");
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Server.deleteFriend(FriendStatusActivity.this, friend.getGoogleId(), new Server.ResponseCallback() {
-                    @Override
-                    public void execute(InputStream response, int status) {
-                        Toast.makeText(FriendStatusActivity.this, "Your friend was successfully deleted.", Toast.LENGTH_SHORT).show();
-                    }
-                }, null);
-                dialog.dismiss();
-            }
-        });
-
-        Log.d("wut", "wut4");
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        Log.d("wut", "wut5");
-        AlertDialog alert = builder.create();
-        Log.d("wut", "wut6");
         alert.show();
     }
 }
