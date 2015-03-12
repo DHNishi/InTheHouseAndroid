@@ -1,5 +1,6 @@
 package inthehouse.inthehouse;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +55,7 @@ public class AddFriendActivity extends ActionBarActivity implements
         switch (v.getId()) {
             case R.id.btn_submit:
                 Log.d("ADD FRIEND", "Submit button hit.");
+                final Context context = this;
 
                 Server.addFriend(this, ((EditText) findViewById(R.id.txtEmail)).getText().toString(),
                         new Server.ResponseCallback() {
@@ -63,9 +66,21 @@ public class AddFriendActivity extends ActionBarActivity implements
                         else {
                             Log.d("ADD FRIEND", "There was an error.");
                         }
-                        finishActivity(0);
+                        Toast.makeText(context, "Your friend request was sent.", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
-                }, null);
+                }, new Server.ResponseCallback() {
+                            public void execute(InputStream response, int status) {
+                                Log.d("ERROR", "" + status);
+                                if (status == 404) {
+                                    Log.d("otoast", "oh toast");
+                                    Toast.makeText(context, "This email is not registered In The House.", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    Toast.makeText(context, "Something wrong happened! Please try again.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                 break;
         }
     }
