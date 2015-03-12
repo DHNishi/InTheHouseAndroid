@@ -1,6 +1,7 @@
 package inthehouse.inthehouse;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
@@ -43,7 +44,8 @@ public class PersonView extends LinearLayout {
                 .placeholder(R.drawable.icon_user_default)
                 .into(mPhotoVw);
         mNameVw.setText(mPerson.getName());
-        mLastCheckinVw.setText(mPerson.getLastCheckin().toString());
+        CharSequence checkinFormat = DateUtils.getRelativeDateTimeString(getContext(), mPerson.getLastCheckin().getTime(), DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);
+        mLastCheckinVw.setText(checkinFormat.toString());
         mHomeIndicatorVw.setImageResource(mPerson.isHome() ? R.drawable.house_icon_green
                 : R.drawable.house_icon_red);
 
