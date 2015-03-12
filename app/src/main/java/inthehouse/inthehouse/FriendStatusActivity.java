@@ -59,7 +59,6 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         mNoFriendsVw = (TextView) findViewById(R.id.noFriendsText);
         mNoFriendsVw.setVisibility(View.GONE);
 
-        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
