@@ -18,5 +18,6 @@
     <string name="reject_request">Reject</string>
     <string name="add_friend">Add Friends</string>
     <string name="login_button">Login with Google</string>
+    <string name="refresh">Refresh</string>
 
 </resources>
