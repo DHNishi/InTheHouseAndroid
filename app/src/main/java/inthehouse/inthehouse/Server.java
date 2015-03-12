@@ -27,6 +27,7 @@ public class Server {
     private static final String ROUTE_ACCEPT_REQUEST = "/friends/accept/";
     private static final String ROUTE_REJECT_REQUEST = "/friends/reject/";
     private static final String ROUTE_ADD_FRIEND = "/friends/add/";
+    private static final String ROUTE_DELETE_FRIEND = "/friends/delete/";
 
     // Status codes
     public static final int SUCCESS = 200;
@@ -59,6 +60,11 @@ public class Server {
     public static void rejectFriendRequest(Context ctx, String friendId, ResponseCallback onSuccess,
                                            ResponseCallback onError) {
         sendRequest(ctx, ROUTE_REJECT_REQUEST, friendId, onSuccess, onError);
+    }
+
+    public static void deleteFriend(Context ctx, String friendId, ResponseCallback onSuccess,
+                                           ResponseCallback onError) {
+        sendRequest(ctx, ROUTE_DELETE_FRIEND, friendId, onSuccess, onError);
     }
 
     public static void addFriend(Context ctx, String friendEmail, ResponseCallback onSuccess,
