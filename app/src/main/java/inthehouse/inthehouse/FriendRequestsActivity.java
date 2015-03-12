@@ -38,6 +38,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
         mRefreshVw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mRefreshVw.setEnabled(false);
                 mSenders = new ArrayList<Person>();
                 loadFriendRequests();
             }
@@ -73,6 +74,8 @@ public class FriendRequestsActivity extends ActionBarActivity {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+                    mRefreshVw.setEnabled(true);
                 }
             }
         }, null);

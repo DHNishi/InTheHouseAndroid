@@ -51,6 +51,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
     private TextView mNoFriendsVw;
     private Button mRefreshVw;
 
+
     private static final String TAG = "Friend Status";
 
     @Override
@@ -64,6 +65,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         mRefreshVw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mRefreshVw.setEnabled(false);
                 mFriends = new ArrayList<Person>();
                 loadFriendStatuses();
             }
@@ -182,6 +184,8 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+                    mRefreshVw.setEnabled(true);
                 }
             }
         }, null);
