@@ -1,9 +1,12 @@
 package inthehouse.inthehouse;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +22,7 @@ public class PersonView extends LinearLayout {
     private TextView mNameVw;
     private TextView mLastCheckinVw;
     private ImageView mHomeIndicatorVw;
+    private ImageButton mDeleteVw;
 
     public PersonView(Context context, Person person) {
         super(context);
@@ -30,7 +34,15 @@ public class PersonView extends LinearLayout {
         mNameVw = (TextView) this.findViewById(R.id.userName);
         mLastCheckinVw = (TextView) this.findViewById(R.id.lastCheckin);
         mHomeIndicatorVw = (ImageView) this.findViewById(R.id.homeIndicator);
+        mDeleteVw = (ImageButton) this.findViewById(R.id.deleteFriendBtn);
         setPerson(person);
+
+        mDeleteVw.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((FriendStatusActivity) mContext).deleteFriend(mPerson);
+            }
+        });
     }
 
     public PersonView(Context context, AttributeSet attrs) {

@@ -64,10 +64,6 @@ public class FriendRequestsActivity extends ActionBarActivity {
                             ));
                         }
 
-                        // Still keeping these for now for testing
-                        mSenders.add(new Person("Bill", "asdfasfd", "http://cdn02.cdn.justjared.com/wp-content/uploads/2008/01/depp-paris/johnny-depp-paris-person-19.jpg", new Timestamp(System.currentTimeMillis()), null));
-                        mSenders.add(new Person("Frank", "asdfasfdf", "http://bygghjalphemma.se/wp-content/uploads/2014/11/bill-gates-wealthiest-person.jpg", new Timestamp(System.currentTimeMillis() - 1800000), null));
-
                         mSendersAdapter = new PersonListAdapter(FriendRequestsActivity.this,
                                 mSenders, RequestView.class);
                         mRequestsVw.setAdapter(mSendersAdapter);

@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 import inthehouse.inthehouse.Persistence.PreferenceStorage;
 
-public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class FriendStatusActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private ArrayList<Person> mFriends;
 
@@ -152,11 +152,11 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
                     if (responseData != null) {
                         for (Map<String, String> friend : responseData) {
-                            Log.d("FriendStatus", "id: " + friend.get("id"));
+                            Log.d("FriendStatus", "url: " + friend.get("picture"));
                             mFriends.add(new Person(
                                     friend.get("name"),
                                     friend.get("id"),
-                                    friend.get("picUrl"),
+                                    friend.get("picture"),
                                     new Timestamp(System.currentTimeMillis()
                                             - Integer.parseInt(friend.get("checkin"))
                                             * TimeUnit.SECONDS.toMillis(1)),
@@ -164,14 +164,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
                             ));
                         }
 
-                        // Still keeping these for now for testing
-                        mFriends.add(new Person("Bill", "asdfasfd", "http://cdn02.cdn.justjared.com/wp-content/uploads/2008/01/depp-paris/johnny-depp-paris-person-19.jpg", new Timestamp(System.currentTimeMillis()), null));
-                        mFriends.add(new Person("Frank", "asdfasfdf", "http://bygghjalphemma.se/wp-content/uploads/2014/11/bill-gates-wealthiest-person.jpg", new Timestamp(System.currentTimeMillis() - 1800000), null));
-                        mFriends.add(new Person("Humphrey McGibbens", "asdfasfdff", "http://si.wsj.net/public/resources/images/ED-AM674_person_G_20101206164729.jpg", new Timestamp(System.currentTimeMillis() - 7200000), null));
-                        mFriends.add(new Person("Finishi", "asdfasfdfff", "http://images1.fanpop.com/images/photos/1400000/Michael-in-Branch-Closing-michael-scott-1468602-1280-720.jpg", new Timestamp(System.currentTimeMillis()), null));
-                        mFriends.add(new Person("Mr. Patrick", "asdfasfdfffffffff", "https://textbookstop.files.wordpress.com/2011/05/michael_scott_the_office_high_resolution_declare_bankrupcy.png", new Timestamp(System.currentTimeMillis() - 7200000), null));
-
-                        mFriendsAdapter = new PersonListAdapter(getBaseContext(), mFriends, PersonView.class);
+                        mFriendsAdapter = new PersonListAdapter(FriendStatusActivity.this, mFriends, PersonView.class);
                         mFriendStatusVw.setAdapter(mFriendsAdapter);
                     }
                     else {
@@ -210,6 +203,78 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         });
 
         AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    public void deleteFriend(final Person friend) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Confirm Friend Deletion");
+        builder.setMessage("Are you sure you want to delete " + friend.getName() + "?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Server.deleteFriend(FriendStatusActivity.this, friend.getGoogleId(), new Server.ResponseCallback() {
+                    @Override
+                    public void execute(InputStream response, int status) {
+                        mFriends.remove(friend);
+                        mFriendsAdapter.notifyDataSetChanged();
+                        Toast.makeText(FriendStatusActivity.this, "Your friend was successfully deleted.", Toast.LENGTH_SHORT).show();
+                    }
+                }, null);
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        final Person friend = ((PersonView) v.getParent().getParent()).getPerson();
+        Log.d("wut", "wut1");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        Log.d("wut", "wut2");
+        builder.setTitle("Confirm Friend Deletion");
+        builder.setMessage("Are you sure you want to delete " + friend.getName() + "?");
+
+        Log.d("wut", "wut3");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Server.deleteFriend(FriendStatusActivity.this, friend.getGoogleId(), new Server.ResponseCallback() {
+                    @Override
+                    public void execute(InputStream response, int status) {
+                        Toast.makeText(FriendStatusActivity.this, "Your friend was successfully deleted.", Toast.LENGTH_SHORT).show();
+                    }
+                }, null);
+                dialog.dismiss();
+            }
+        });
+
+        Log.d("wut", "wut4");
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        Log.d("wut", "wut5");
+        AlertDialog alert = builder.create();
+        Log.d("wut", "wut6");
         alert.show();
     }
 }
