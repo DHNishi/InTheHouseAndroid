@@ -26,7 +26,7 @@ public class CheckinService extends Service {
         PendingIntent pending = PendingIntent.getBroadcast(ctx, 0, new Intent(ACTION_CHECKIN),
                 PendingIntent.FLAG_CANCEL_CURRENT);
         alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pending);
+                60000, 60000, pending);
     }
 
     @Override
