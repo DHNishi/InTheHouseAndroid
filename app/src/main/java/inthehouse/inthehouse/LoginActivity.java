@@ -51,7 +51,9 @@ public class LoginActivity extends Activity implements
                 AsyncTask<Void, Void, Void> task = new GetUserName(this, email, SCOPE) {
                     @Override
                     protected void onPostExecute(Void token) {
+                        go_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(go_intent);
+                        finish();
                     }};
                 task.execute();
             }
