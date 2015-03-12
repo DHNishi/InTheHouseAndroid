@@ -49,6 +49,7 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
 
     private ListView mFriendStatusVw;
     private TextView mNoFriendsVw;
+    private Button mRefreshVw;
 
     private static final String TAG = "Friend Status";
 
@@ -58,7 +59,15 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         setContentView(R.layout.activity_friend_status);
         mFriendStatusVw = (ListView) findViewById(R.id.friendStatusViewGroup);
         mNoFriendsVw = (TextView) findViewById(R.id.noFriendsText);
+        mRefreshVw = (Button) findViewById(R.id.refreshStatusBtn);
 
+        mRefreshVw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFriends = new ArrayList<Person>();
+                loadFriendStatuses();
+            }
+        });
         mNoFriendsVw.setVisibility(View.GONE);
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

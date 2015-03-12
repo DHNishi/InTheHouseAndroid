@@ -38,6 +38,7 @@ public class FriendRequestsActivity extends ActionBarActivity {
         mRefreshVw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSenders = new ArrayList<Person>();
                 loadFriendRequests();
             }
         });
