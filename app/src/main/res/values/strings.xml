@@ -19,5 +19,6 @@
     <string name="add_friend">Add Friends</string>
     <string name="login_button">Login with Google</string>
     <string name="refresh">Refresh</string>
+    <string name="set_wifi">Set home wifi</string>
 
 </resources>

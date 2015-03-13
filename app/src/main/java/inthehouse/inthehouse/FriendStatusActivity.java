@@ -72,18 +72,8 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         });
         mNoFriendsVw.setVisibility(View.GONE);
 
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-        if (netInfo != null && netInfo.isConnected()) {
-            WifiInfo wifiInfo = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
-            String homeWifi = PreferenceStorage.getWifiSSID(this);
-
-            // if home mac address preference is not set
-            if (homeWifi == null) {
-                // ask user if he is home
-                showHomePopup(wifiInfo.getSSID(), this);
-            }
+        if (PreferenceStorage.getWifiSSID(this) == null) {
+            showHomePopup(this);
         }
 
         if (!isServiceRunning(CheckinService.class)) {
@@ -136,6 +126,9 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
                 return true;
             case R.id.action_add_friend:
                 startActivity(new Intent(this, AddFriendActivity.class));
+                return true;
+            case R.id.action_set_wifi:
+                showHomePopup(getApplicationContext());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -191,7 +184,22 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
         }, null);
     }
 
-    private void showHomePopup(final String networkName, final Context c) {
+    private void showHomePopup(final Context c) {
+        final String networkName;
+
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (netInfo != null && netInfo.isConnected()) {
+            WifiInfo wifiInfo = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
+            String homeWifi = PreferenceStorage.getWifiSSID(this);
+            networkName = wifiInfo.getSSID();
+        }
+        else {
+            Toast.makeText(c, "Please connect to wifi to set a home network.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Are you home?");
         builder.setMessage("Is " + networkName + " your home network?");
@@ -201,7 +209,6 @@ public class FriendStatusActivity extends ActionBarActivity implements GoogleApi
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 PreferenceStorage.setWifiSSID(c, networkName);
-
                 dialog.dismiss();
             }
         });
